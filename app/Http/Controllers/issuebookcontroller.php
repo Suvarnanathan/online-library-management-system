@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-//namespace App\Http\Controllers\Auth;
-//session_start();
 use Carbon\Carbon;
 use Auth;
 use App\issuebook;
@@ -42,8 +40,7 @@ class issuebookcontroller extends Controller
         ->join('users','users.name','=','issuebooks.username')
        ->select('issuebooks.username','books.bid','books.name','books.authors','books.edition','books.status')
        ->get();
-       
-       return view('admin.reqinfo', compact('books'));
+    return view('admin.reqinfo', compact('books'));
     }
     public function issueinfo(Request $request){
        
@@ -75,6 +72,11 @@ public function expired(){
    DB::update("update books SET quantity=quantity+1  WHERE  bid='$_POST[bid]';");
  
    } 
+   else{
+    $now = Carbon::now()->toDateString();
+    $books ->returns=request('returns');
+ DB::update("update issuebooks set approve ='expired' where returns<'$now';");
+   }
    return view('expiredlist', compact('books'));
   
    
@@ -193,7 +195,7 @@ public function returned(){
                 mysqli_query($conn,"UPDATE books SET status='available'  WHERE  bid='$_POST[bid]';");  
             }
             }
-            return redirect('/approved');
+            return redirect('/viewreqinfo');
 
   
         }
